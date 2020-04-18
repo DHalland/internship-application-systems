@@ -5,32 +5,33 @@
 
 #define DELAY 1
 
-#define ECHO_REPLY 0
-#define ECHO_REQUEST 8
-#define TTL_EXPIRED 11
+// #define ECHO_REPLY 0
+// #define ECHO_REQUEST 8
+#define TTL_EXPIRED 11  // icmp code for expired ttl 
 
-#define HEADER 4 //set a max value for the echo request pkt message
+#define ICMP_PKT 128 // packet size, large enough for IP + ICMP payloads
 
-typedef struct packet {
-	uint8_t type; // type of ICMP packet (echo reply/request, or neither)
-	uint8_t code; // additional type info (TTL expired, etc.)
-	uint16_t checksum; // checksum, will be set to 0
+#define IP_HEADER 20 //num of bytes used for ip portion of reply packet
+#define BYTES 64 // num of bytes received from echo reply
 
-	char buf[HEADER]; //the actual message to be sent
+#define PINGCONST_1 56 // constant number 1 seen at the beginning of every ping
+#define PINGCONST_2 84 // another constant value at the top of every ping
 
-}Packet; 
+#define TTL_INDEX 8
 
 void checkArgs(int argc, char *argv[]);
 
+void pingIPAddress(char *dest);
 struct addrinfo getIPAddress(char *dest);
 
-void pingIPAddress(char *dest);
+void printResults(int icmp_received, int icmp_num, long double time, char *dest); 
 
-Packet createPacket(Packet pkt);
+struct icmp createPacket(struct icmp *pkt);
 int createRawSocket(struct sockaddr_in *addr);
 
 void wait(int ms);
 
 void stopPinging(int signum);
+unsigned short in_cksum(unsigned short *addr,int len);
 
 #endif
