@@ -54,7 +54,7 @@ void pingIPAddress(char *dest) {
 	/* define all necessary variables*/
 	struct icmp *pkt;
 	char packet[ICMP_PKT];
-	int i, byte, sent, received, skt, src_len, reply;
+	int sent, received, skt, src_len;
 	double curr_time;
 	long double rtt, total_time;
 
@@ -63,7 +63,7 @@ void pingIPAddress(char *dest) {
 	struct sockaddr source;
 	struct timespec t0, t1, start, end;
 
-	int icmp_num = 0, icmp_received = 0, failed = 0;
+	int icmp_num = 0, icmp_received = 0;
 
 	signal(SIGINT, stopPinging);
 
@@ -86,8 +86,8 @@ void pingIPAddress(char *dest) {
 		clock_gettime(CLOCK_MONOTONIC, &t0);
 
 		if ((sent = sendto(skt, pkt, sizeof(pkt), 0,
-		   (struct sockaddr*)addr, sizeof(*addr))) < 0) { //3406 error code prevents blocking
-			printf("\nRequest packet failed to send\n");
+		   (struct sockaddr*)addr, sizeof(*addr))) <= 0) { //3406 error code prevents blocking
+			fprintf(stderr, "\nRequest packet failed to send\n");
 		}
 		else
 			icmp_num += 1;
@@ -153,10 +153,6 @@ int createRawSocket(struct sockaddr_in *addr) {
 		exit(-1); 
 	}
 	return skt;
-}
-
-struct icmp createPacket(struct icmp *pkt) {
-	return *pkt;
 }
 
 void wait(int seconds) {

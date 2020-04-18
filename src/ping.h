@@ -26,7 +26,6 @@ struct addrinfo getIPAddress(char *dest);
 
 void printResults(int icmp_received, int icmp_num, long double time, char *dest); 
 
-struct icmp createPacket(struct icmp *pkt);
 int createRawSocket(struct sockaddr_in *addr);
 
 void wait(int ms);
